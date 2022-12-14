@@ -1,12 +1,55 @@
+CREATE TABLE `user` (
+  `user_id` varchar(25) NOT NULL,
+  `password` varchar(16) NOT NULL,
+  `description` varchar(200) DEFAULT NULL,
+  `name` varchar(100) NOT NULL,
+  `address` varchar(100) DEFAULT NULL,
+  `dob` date NOT NULL,
+  `phone_number` varchar(16) DEFAULT NULL,
+  `email` varchar(50) NOT NULL,
+  `follower_count` int unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `comment` (
   `comment_id` int unsigned NOT NULL AUTO_INCREMENT,
   `comment_content` varchar(200) NOT NULL,
   `comment_datetime` datetime NOT NULL,
   `react_count` int unsigned NOT NULL DEFAULT '0',
-  `writer_id` varchar(16) NOT NULL,
+  `writer_id` varchar(25) NOT NULL,
   PRIMARY KEY (`comment_id`),
   KEY `comment_writer_id_idx` (`writer_id`),
   CONSTRAINT `comment_writer_id` 
+    FOREIGN KEY (`writer_id`) 
+    REFERENCES `user` (`user_id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `group` (
+  `group_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `group_name` varchar(50) NOT NULL,
+  `group_description` varchar(200) DEFAULT NULL,
+  `member_count` int unsigned NOT NULL DEFAULT '1',
+  `manager_id` varchar(25) NOT NULL,
+  PRIMARY KEY (`group_id`),
+  KEY `manager_id_idx` (`manager_id`),
+  CONSTRAINT `group_manager_id` 
+    FOREIGN KEY (`manager_id`) 
+    REFERENCES `user` (`user_id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `post` (
+  `post_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `post_datetime` datetime NOT NULL,
+  `post_content` varchar(1000) NOT NULL,
+  `post_media` blob NOT NULL,
+  `comment_count` int unsigned NOT NULL DEFAULT '0',
+  `react_count` int unsigned NOT NULL DEFAULT '0',
+  `writer_id` varchar(25) NOT NULL,
+  PRIMARY KEY (`post_id`),
+  KEY `writer_id_idx` (`writer_id`),
+  CONSTRAINT `post_writer_id` 
     FOREIGN KEY (`writer_id`) 
     REFERENCES `user` (`user_id`)
     ON DELETE CASCADE
@@ -27,7 +70,7 @@ CREATE TABLE `comment_reply` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `comment_user_reaction` (
-  `user_id` varchar(16) NOT NULL,
+  `user_id` varchar(25) NOT NULL,
   `comment_id` int unsigned NOT NULL,
   `react_type` varchar(5) NOT NULL,
   PRIMARY KEY (`user_id`,`comment_id`),
@@ -42,22 +85,8 @@ CREATE TABLE `comment_user_reaction` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `group` (
-  `group_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `group_name` varchar(50) NOT NULL,
-  `group_description` varchar(200) DEFAULT NULL,
-  `member_count` int unsigned NOT NULL DEFAULT '1',
-  `manager_id` varchar(16) NOT NULL,
-  PRIMARY KEY (`group_id`),
-  KEY `manager_id_idx` (`manager_id`),
-  CONSTRAINT `group_manager_id` 
-    FOREIGN KEY (`manager_id`) 
-    REFERENCES `user` (`user_id`)
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 CREATE TABLE `group_member` (
-  `member_id` varchar(16) NOT NULL,
+  `member_id` varchar(25) NOT NULL,
   `group_id` int unsigned NOT NULL,
   PRIMARY KEY (`member_id`,`group_id`),
   KEY `member_group_id_idx` (`group_id`),
@@ -96,22 +125,6 @@ CREATE TABLE `personal_post` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `post` (
-  `post_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `post_datetime` datetime NOT NULL,
-  `post_content` varchar(1000) NOT NULL,
-  `post_media` blob NOT NULL,
-  `comment_count` int unsigned NOT NULL DEFAULT '0',
-  `react_count` int unsigned NOT NULL DEFAULT '0',
-  `writer_id` varchar(16) NOT NULL,
-  PRIMARY KEY (`post_id`),
-  KEY `writer_id_idx` (`writer_id`),
-  CONSTRAINT `post_writer_id` 
-    FOREIGN KEY (`writer_id`) 
-    REFERENCES `user` (`user_id`)
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 CREATE TABLE `post_comment` (
   `comment_id` int unsigned NOT NULL,
   `reply_count` int unsigned NOT NULL DEFAULT '0',
@@ -129,7 +142,7 @@ CREATE TABLE `post_comment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `post_user_reaction` (
-  `user_id` varchar(16) NOT NULL,
+  `user_id` varchar(25) NOT NULL,
   `post_id` int unsigned NOT NULL,
   `react_type` varchar(5) NOT NULL,
   PRIMARY KEY (`user_id`,`post_id`),
@@ -152,7 +165,7 @@ CREATE TABLE `topic` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `topic_follower` (
-  `follower_id` varchar(16) NOT NULL,
+  `follower_id` varchar(25) NOT NULL,
   `topic_id` int unsigned NOT NULL,
   PRIMARY KEY (`follower_id`,`topic_id`),
   KEY `follow_topic_id_idx` (`topic_id`),
@@ -181,22 +194,10 @@ CREATE TABLE `topic_post` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `user` (
-  `user_id` varchar(16) NOT NULL,
-  `password` varchar(16) NOT NULL,
-  `description` varchar(200) DEFAULT NULL,
-  `name` varchar(100) NOT NULL,
-  `address` varchar(100) DEFAULT NULL,
-  `dob` date NOT NULL,
-  `phone_number` varchar(16) DEFAULT NULL,
-  `email` varchar(50) NOT NULL,
-  `follower_count` int unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `user_follower` (
-  `user_id` varchar(16) NOT NULL,
-  `follower_id` varchar(16) NOT NULL,
+  `user_id` varchar(25) NOT NULL,
+  `follower_id` varchar(25) NOT NULL,
   PRIMARY KEY (`user_id`,`follower_id`),
   KEY `follower_id_idx` (`follower_id`),
   CONSTRAINT `follower_id` 
@@ -234,12 +235,12 @@ END $$
 DELIMITER ;
 
 DELIMITER ;;
-CREATE* TRIGGER `comment_user_reaction_AFTER_INSERT` 
+CREATE TRIGGER `comment_user_reaction_AFTER_INSERT` 
 AFTER INSERT ON `comment_user_reaction` 
 FOR EACH ROW 
 BEGIN
 	update comment set react_count = react_count + 1 where comment_id = new.comment_id;
-END */;;
+END ;;
 DELIMITER ;
 
 DELIMITER $$
