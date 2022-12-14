@@ -2,6 +2,7 @@ CREATE DATABASE outmeta;
 
 USE outmeta;
 
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `user_id` varchar(25) NOT NULL,
   `password` varchar(16) NOT NULL,
@@ -15,6 +16,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `comment`;
 CREATE TABLE `comment` (
   `comment_id` int unsigned NOT NULL AUTO_INCREMENT,
   `comment_content` varchar(200) NOT NULL,
@@ -29,6 +31,7 @@ CREATE TABLE `comment` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group` (
   `group_id` int unsigned NOT NULL AUTO_INCREMENT,
   `group_name` varchar(50) NOT NULL,
@@ -43,6 +46,7 @@ CREATE TABLE `group` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `post`;
 CREATE TABLE `post` (
   `post_id` int unsigned NOT NULL AUTO_INCREMENT,
   `post_datetime` datetime NOT NULL,
@@ -59,6 +63,7 @@ CREATE TABLE `post` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `comment_reply`;
 CREATE TABLE `comment_reply` (
   `reply_id` int unsigned NOT NULL,
   `comment_id` int unsigned NOT NULL,
@@ -73,6 +78,7 @@ CREATE TABLE `comment_reply` (
     REFERENCES `comment` (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `comment_user_reaction`;
 CREATE TABLE `comment_user_reaction` (
   `user_id` varchar(25) NOT NULL,
   `comment_id` int unsigned NOT NULL,
@@ -89,6 +95,7 @@ CREATE TABLE `comment_user_reaction` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `group_member`;
 CREATE TABLE `group_member` (
   `member_id` varchar(25) NOT NULL,
   `group_id` int unsigned NOT NULL,
@@ -104,6 +111,7 @@ CREATE TABLE `group_member` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `group_post`;
 CREATE TABLE `group_post` (
   `post_id` int unsigned NOT NULL,
   `group_id` int unsigned NOT NULL,
@@ -119,6 +127,7 @@ CREATE TABLE `group_post` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `personal_post`;
 CREATE TABLE `personal_post` (
   `post_id` int unsigned NOT NULL,
   `post_privacy` varchar(7) NOT NULL COMMENT '"PUBLIC" or "PRIVATE"',
@@ -129,6 +138,7 @@ CREATE TABLE `personal_post` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `post_comment`;
 CREATE TABLE `post_comment` (
   `comment_id` int unsigned NOT NULL,
   `reply_count` int unsigned NOT NULL DEFAULT '0',
@@ -145,6 +155,7 @@ CREATE TABLE `post_comment` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `post_user_reaction`;
 CREATE TABLE `post_user_reaction` (
   `user_id` varchar(25) NOT NULL,
   `post_id` int unsigned NOT NULL,
@@ -161,6 +172,7 @@ CREATE TABLE `post_user_reaction` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `topic`;
 CREATE TABLE `topic` (
   `topic_id` int unsigned NOT NULL AUTO_INCREMENT,
   `topic_titile` varchar(20) NOT NULL,
@@ -168,6 +180,7 @@ CREATE TABLE `topic` (
   PRIMARY KEY (`topic_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `topic_follower`;
 CREATE TABLE `topic_follower` (
   `follower_id` varchar(25) NOT NULL,
   `topic_id` int unsigned NOT NULL,
@@ -183,6 +196,7 @@ CREATE TABLE `topic_follower` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `topic_post`;
 CREATE TABLE `topic_post` (
   `post_id` int unsigned NOT NULL,
   `topic_id` int unsigned NOT NULL,
@@ -198,7 +212,7 @@ CREATE TABLE `topic_post` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
+DROP TABLE IF EXISTS `user_follower`;
 CREATE TABLE `user_follower` (
   `user_id` varchar(25) NOT NULL,
   `follower_id` varchar(25) NOT NULL,
@@ -280,6 +294,15 @@ AFTER INSERT ON `post_comment`
 FOR EACH ROW 
 BEGIN
 	update post set comment_count = comment_count + 1 where post_id = new.post_id;
+END $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER `post_comment_AFTER_UPDATE` 
+AFTER UPDATE ON `post_comment` 
+FOR EACH ROW 
+BEGIN
+	update post set comment_count = comment_count + new.reply_count - old.reply_count where post_id = new.post_id;
 END $$
 DELIMITER ;
 
