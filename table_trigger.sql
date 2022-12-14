@@ -1,3 +1,7 @@
+CREATE DATABASE outmeta;
+
+USE outmeta;
+
 CREATE TABLE `user` (
   `user_id` varchar(25) NOT NULL,
   `password` varchar(16) NOT NULL,
