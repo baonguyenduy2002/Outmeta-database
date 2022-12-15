@@ -11,14 +11,19 @@ RETURN TRUE;
 END$$
 DELIMITER;
 
+
 DROP function IF EXISTS `edit_post`;
 DELIMITER $$
 CREATE FUNCTION `edit_post`(edit_post_id INT, edit_post_content VARCHAR(1000), edit_post_media BLOB) RETURNS tinyint(1)
     DETERMINISTIC
 BEGIN
-	IF (SELECT * FROM post WHERE post.post_id = edit_post_id)
+	IF (SELECT COUNT(*) FROM post WHERE post.post_id = edit_post_id)
     THEN
-
+		UPDATE post
+        SET post_content = edit_post_content,
+			post_media = edit_post_media
+		WHERE 
+			post_id = edit_post_id;
 		RETURN TRUE;
     ELSE
 		SIGNAL SQLSTATE '45000'
