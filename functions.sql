@@ -272,3 +272,27 @@ BEGIN
 	END IF;
 END$$
 DELIMITER ;
+
+-- function to add manager as group member after create new group
+-- Input: group_name, group_description, manager_id
+-- Output: none
+
+DROP function IF EXISTS `add_new_group`;
+DELIMITER $$
+CREATE FUNCTION `add_new_group`(
+	group_name VARCHAR(50),
+	group_description VARCHAR(200),
+	manager_id VARCHAR(25)
+) 
+RETURNS INT DETERMINISTIC
+BEGIN
+	INSERT INTO `group` (group_name, group_description, manager_id) 
+	VALUES 
+	(group_name, group_description, manager_id);
+
+	INSERT INTO `group_member` (member_id, group_id)
+	VALUES (manager_id, LAST_INSERT_ID());
+
+	RETURN 1;
+END$$
+DELIMITER ;
