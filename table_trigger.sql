@@ -50,8 +50,8 @@ DROP TABLE IF EXISTS `post`;
 CREATE TABLE `post` (
   `post_id` int unsigned NOT NULL AUTO_INCREMENT,
   `post_datetime` datetime NOT NULL,
-  `post_content` varchar(1000) NOT NULL,
-  `post_media` blob NOT NULL,
+  `post_content` varchar(1000) DEFAULT NULL,
+  `post_media` blob DEFAULT NULL,
   `comment_count` int unsigned NOT NULL DEFAULT '0',
   `react_count` int unsigned NOT NULL DEFAULT '0',
   `writer_id` varchar(25) NOT NULL,
@@ -175,7 +175,7 @@ CREATE TABLE `post_user_reaction` (
 DROP TABLE IF EXISTS `topic`;
 CREATE TABLE `topic` (
   `topic_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `topic_titile` varchar(20) NOT NULL,
+  `topic_title` varchar(20) NOT NULL,
   `follower_count` int unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`topic_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
