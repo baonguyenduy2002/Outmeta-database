@@ -149,3 +149,13 @@ BEGIN
   END IF;
 END $$
 DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER `group_AFTER_INSERT` 
+AFTER INSERT ON `group` 
+FOR EACH ROW 
+BEGIN
+	INSERT INTO `group_member` (member_id, group_id) 
+        VALUES (new.manager_id, new.group_id);
+END $$
+DELIMITER ;
