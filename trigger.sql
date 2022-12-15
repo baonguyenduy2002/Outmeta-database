@@ -212,17 +212,3 @@ BEGIN
   END IF;
 END $$
 DELIMITER ;
-
-
--- Trigger insert group manager as a member by inserting a new rercord to group_member table whenever create a new group
--- INPUT: AFTER INSERT ON `group`
--- OUTPUT: INSERT INTO `group_member` (member_id, group_id) VALUES (new.manager_id, new.group_id)
-DELIMITER $$
-CREATE TRIGGER `group_AFTER_INSERT` 
-AFTER INSERT ON `group` 
-FOR EACH ROW 
-BEGIN
-	INSERT INTO `group_member` (member_id, group_id) 
-        VALUES (new.manager_id, new.group_id);
-END $$
-DELIMITER ;

@@ -82,7 +82,7 @@ DELIMITER $$
 CREATE PROCEDURE sortTop50MemberGroup()
 BEGIN
     SELECT  *
-    FROM    group
+    FROM    `group`
     ORDER BY member_count DESC
     LIMIT 50;
 END $$
