@@ -10,7 +10,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- procedure for sort top 50 group posts base on interaction point (react + comment)
 DROP PROCEDURE IF EXISTS sortTop50GroupPost;
 DELIMITER $$
@@ -24,7 +23,6 @@ BEGIN
     LIMIT 50;
 END $$
 DELIMITER ;
-
 
 -- procedure for sort top 50 topic posts base on interaction point (react + comment)
 DROP PROCEDURE IF EXISTS sortTop50TopicPost;
@@ -40,7 +38,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- procedure for sort top 50 personal posts base on interaction point (react + comment)
 DROP PROCEDURE IF EXISTS sortTop50PersonalPost;
 DELIMITER $$
@@ -54,7 +51,6 @@ BEGIN
     LIMIT 50;
 END $$
 DELIMITER ;
-
 
 -- procedure for sort top 3 most commented posts in current week
 DROP PROCEDURE IF EXISTS sortWeekMostCommentPost;
@@ -77,7 +73,6 @@ BEGIN
     LIMIT 3;
 END $$
 DELIMITER ;
-
 
 -- procedure for sort top 3 most commented group posts in current week
 DROP PROCEDURE IF EXISTS sortWeekMostCommentGroupPost;
@@ -103,7 +98,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- procedure for sort top 3 most commented topic posts in current week
 DROP PROCEDURE IF EXISTS sortWeekMostCommentTopicPost;
 DELIMITER $$
@@ -127,7 +121,6 @@ BEGIN
     LIMIT 3;
 END $$
 DELIMITER ;
-
 
 -- procedure for sort top 3 most commented personal posts in current week
 DROP PROCEDURE IF EXISTS sortWeekMostCommentPersonalPost;
@@ -156,7 +149,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- procedure for sort top 50 followed topic
 DROP PROCEDURE IF EXISTS sortTop50FollowedTopic;
 DELIMITER $$
@@ -169,7 +161,6 @@ BEGIN
 END $$
 DELIMITER ;
 
-
 -- procedure for sort top 50 group in term of member
 DROP PROCEDURE IF EXISTS sortTop50MemberGroup;
 DELIMITER $$
@@ -181,3 +172,39 @@ BEGIN
     LIMIT 50;
 END $$
 DELIMITER ;
+
+-- procedure for showing posts of a group
+USE `outmeta`;
+DROP PROCEDURE IF EXISTS `view_post_group`;
+DELIMITER $$
+CREATE PROCEDURE `view_post_group`(group_id INT)
+BEGIN
+	SELECT post.post_id, post_datetime, post_content, post_media, comment_count, react_count, writer_id
+    FROM post, group_post
+    WHERE 	post.post_id = group_post.post_id AND
+			group_post.group_id = group_id;
+END$$
+DELIMITER;
+
+-- procedure for showing posts of a topic
+DROP PROCEDURE IF EXISTS `view_post_topic`;
+DELIMITER $$
+CREATE PROCEDURE `view_post_topic`(topic_id INT)
+BEGIN
+	SELECT post.post_id, post_datetime, post_content, post_media, comment_count, react_count, writer_id
+    FROM post, topic_post
+    WHERE 	post.post_id = topic_post.post_id AND
+			topic_post.topic_id = topic_id;
+END$$
+DELIMITER;
+
+-- procedure for showing posts of an user
+DROP procedure IF EXISTS `view_post_user`;
+DELIMITER $$
+CREATE PROCEDURE `view_post_user`(user_id VARCHAR(25))
+BEGIN
+	SELECT *
+    FROM post
+    WHERE writer_id = user_id;
+END$$
+DELIMITER;
