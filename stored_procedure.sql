@@ -13,6 +13,8 @@ END $$
 DELIMITER ;
 
 -- procedure for sort top 50 group posts base on interaction point (react + comment)
+--Input: None
+--Output: top 50 group posts in term of interaction_point (comment_count + react_count)
 DROP PROCEDURE IF EXISTS sortTop50GroupPost;
 DELIMITER $$
 CREATE PROCEDURE sortTop50GroupPost()
@@ -27,6 +29,8 @@ END $$
 DELIMITER ;
 
 -- procedure for sort top 50 topic posts base on interaction point (react + comment)
+--Input: None
+--Output: top 50 topic posts in term of interaction_point (comment_count + react_count)
 DROP PROCEDURE IF EXISTS sortTop50TopicPost;
 DELIMITER $$
 CREATE PROCEDURE sortTop50TopicPost()
@@ -41,6 +45,8 @@ END $$
 DELIMITER ;
 
 -- procedure for sort top 50 personal posts base on interaction point (react + comment)
+--Input: None
+--Output: top 50 pesonal posts in term of interaction_point (comment_count + react_count)
 DROP PROCEDURE IF EXISTS sortTop50PersonalPost;
 DELIMITER $$
 CREATE PROCEDURE sortTop50PersonalPost()
@@ -55,6 +61,8 @@ END $$
 DELIMITER ;
 
 -- procedure for sort top 50 followed topic
+--Input: None
+--Output: top 50 topic in term of followers
 DROP PROCEDURE IF EXISTS sortTop50FollowedTopic;
 DELIMITER $$
 CREATE PROCEDURE sortTop50FollowedTopic()
@@ -67,6 +75,8 @@ END $$
 DELIMITER ;
 
 -- procedure for sort top 50 group in term of member
+--Input: None
+--Output: top 50 group in term of members
 DROP PROCEDURE IF EXISTS sortTop50MemberGroup;
 DELIMITER $$
 CREATE PROCEDURE sortTop50MemberGroup()
