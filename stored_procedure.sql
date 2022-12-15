@@ -52,103 +52,6 @@ BEGIN
 END $$
 DELIMITER ;
 
--- procedure for sort top 3 most commented posts in current week
-DROP PROCEDURE IF EXISTS sortWeekMostCommentPost;
-DELIMITER $$
-CREATE PROCEDURE sortWeekMostCommentPost()
-BEGIN
-    SELECT  *, COUNT(comment.comment_id) AS week_comment_count
-    FROM    post, 
-            post_comment, 
-            comment_reply,
-            comment       
-    WHERE   comment.comment_id = post_comment.comment_id
-        AND comment.comment_id = comment_reply.reply_id
-        AND post.post_id = post_comment.post_id 
-        AND post_comment.comment_id = comment_reply.comment_id
-        AND comment.comment_datetime > SUBDATE(CURDATE(), weekday(CURDATE()))
-        AND comment.comment_datetime < CURDATE()
-	GROUP BY comment.comment_id
-    ORDER BY week_comment_count DESC
-    LIMIT 3;
-END $$
-DELIMITER ;
-
--- procedure for sort top 3 most commented group posts in current week
-DROP PROCEDURE IF EXISTS sortWeekMostCommentGroupPost;
-DELIMITER $$
-CREATE PROCEDURE sortWeekMostCommentGroupPost()
-BEGIN
-    SELECT  *, COUNT(comment.comment_id) AS week_comment_count
-    FROM    post, 
-            post_comment, 
-            comment_reply,
-            comment,
-            group_post       
-    WHERE   comment.comment_id = post_comment.comment_id
-        AND comment.comment_id = comment_reply.reply_id
-        AND post.post_id = post_comment.post_id 
-        AND post_comment.comment_id = comment_reply.comment_id
-        AND comment.comment_datetime > SUBDATE(CURDATE(), weekday(CURDATE()))
-        AND comment.comment_datetime < CURDATE()
-        AND post.post_id = group_post.post_id
-	GROUP BY comment.comment_id
-    ORDER BY week_comment_count DESC
-    LIMIT 3;
-END $$
-DELIMITER ;
-
--- procedure for sort top 3 most commented topic posts in current week
-DROP PROCEDURE IF EXISTS sortWeekMostCommentTopicPost;
-DELIMITER $$
-CREATE PROCEDURE sortWeekMostCommentTopicPost() 
-BEGIN
-    SELECT  *, COUNT(comment.comment_id) AS week_comment_count
-    FROM    post, 
-            post_comment, 
-            comment_reply,
-            comment,
-            topic_post     
-    WHERE   comment.comment_id = post_comment.comment_id
-        AND comment.comment_id = comment_reply.reply_id
-        AND post.post_id = post_comment.post_id 
-        AND post_comment.comment_id = comment_reply.comment_id
-        AND comment.comment_datetime > SUBDATE(CURDATE(), weekday(CURDATE()))
-        AND comment.comment_datetime < CURDATE()
-        AND post.post_id = topic_post.post_id
-	GROUP BY comment.comment_id
-    ORDER BY week_comment_count DESC
-    LIMIT 3;
-END $$
-DELIMITER ;
-
--- procedure for sort top 3 most commented personal posts in current week
-DROP PROCEDURE IF EXISTS sortWeekMostCommentPersonalPost;
-DELIMITER $$
-CREATE PROCEDURE sortWeekMostCommentPersonalPost()
-BEGIN
-    SELECT  *, COUNT(comment.comment_id) AS week_comment_count
-    FROM    post, 
-            post_comment, 
-            comment_reply,
-            comment,
-            topic_post,
-            personal_post   
-    WHERE   comment.comment_id = post_comment.comment_id
-        AND comment.comment_id = comment_reply.reply_id
-        AND post.post_id = post_comment.post_id 
-        AND post_comment.comment_id = comment_reply.comment_id
-        AND comment.comment_datetime > SUBDATE(CURDATE(), weekday(CURDATE()))
-        AND comment.comment_datetime < CURDATE()
-        AND post.post_id = topic_post.post_id
-        AND post.post_id = personal_post.post_id 
-        AND personal_post.privacy = 'PUBLIC'
-	GROUP BY comment.comment_id
-    ORDER BY week_comment_count DESC
-    LIMIT 3;
-END $$
-DELIMITER ;
-
 -- procedure for sort top 50 followed topic
 DROP PROCEDURE IF EXISTS sortTop50FollowedTopic;
 DELIMITER $$
@@ -173,8 +76,79 @@ BEGIN
 END $$
 DELIMITER ;
 
--- procedure for showing posts of a group
-USE `outmeta`;
+--View get detail follower
+DROP procedure IF EXISTS `get_follower`;
+DELIMITER $$
+CREATE PROCEDURE `get_follower`(user_id VARCHAR(25))
+BEGIN
+    SELECT 
+        `user`.user_id,
+        password,
+        description,
+        name,
+        address,
+        dob,
+        phone_number,
+        email,
+        follower_count
+    FROM `user` JOIN `user_follower`
+    ON `user`.user_id = `user_follower`.follower_id
+
+    WHERE `user_follower`.user_id = user_id;
+END$$
+DELIMITER;
+
+--View get detail users that given user_id is following
+DROP procedure IF EXISTS `get_following`;
+DELIMITER $$
+CREATE PROCEDURE `get_following`(user_id VARCHAR(25))
+BEGIN
+    SELECT 
+        `user`.user_id,
+        password,
+        description,
+        name,
+        address,
+        dob,
+        phone_number,
+        email,
+        follower_count
+    FROM `user` JOIN `user_follower`
+    ON `user`.user_id = `user_follower`.user_id
+
+    WHERE `user_follower`.follower_id = user_id;
+END$$
+DELIMITER;
+
+--View detail topics that a user is following
+DROP procedure IF EXISTS `get_topics`;
+DELIMITER $$
+CREATE PROCEDURE `get_topics`(user_id VARCHAR(25))
+BEGIN
+        SELECT 
+		`topic_follower`.follower_id as user_id,
+        `topic`.topic_id,
+        `topic`.topic_title,
+        `topic`.follower_count
+    FROM outmeta.`topic` 
+    JOIN `topic_follower`
+    ON `topic`.topic_id = `topic_follower`.topic_id
+
+    WHERE `topic_follower`.follower_id = user_id;
+END$$
+DELIMITER;
+
+DROP procedure IF EXISTS `view_group_user`;
+DELIMITER $$
+CREATE PROCEDURE `view_group_user`(user_id VARCHAR(25))
+BEGIN
+	SELECT *
+    FROM `group`, group_member
+    WHERE 	`group`.group_id = group_member.group_id AND
+			group_member.member_id = user_id;
+END$$
+DELIMITER;
+
 DROP PROCEDURE IF EXISTS `view_post_group`;
 DELIMITER $$
 CREATE PROCEDURE `view_post_group`(group_id INT)
@@ -186,7 +160,6 @@ BEGIN
 END$$
 DELIMITER;
 
--- procedure for showing posts of a topic
 DROP PROCEDURE IF EXISTS `view_post_topic`;
 DELIMITER $$
 CREATE PROCEDURE `view_post_topic`(topic_id INT)
@@ -198,7 +171,6 @@ BEGIN
 END$$
 DELIMITER;
 
--- procedure for showing posts of an user
 DROP procedure IF EXISTS `view_post_user`;
 DELIMITER $$
 CREATE PROCEDURE `view_post_user`(user_id VARCHAR(25))
