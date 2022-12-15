@@ -1,4 +1,6 @@
 -- procedure for sort top 50 posts base on interaction point (react + comment)
+--Input: None
+--Output: top 50 posts in term of interaction_point (comment_count + react_count)
 DROP PROCEDURE IF EXISTS sortTop50Post;
 DELIMITER $$
 CREATE PROCEDURE sortTop50Post()
