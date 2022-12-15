@@ -7,7 +7,7 @@ CREATE TRIGGER `comment_reply_AFTER_INSERT`
 AFTER INSERT ON `comment_reply` 
 FOR EACH ROW 
 BEGIN
-	update post_comment set reply_count = reply_count + 1 where comment_id = new.comment_id;
+	update post_comment set reply_count = reply_count + 1 where comment_id = new.reply_id;
 END $$
 DELIMITER ;
 
@@ -16,7 +16,7 @@ CREATE TRIGGER `comment_reply_AFTER_DELETE`
 AFTER DELETE ON `comment_reply` 
 FOR EACH ROW 
 BEGIN
-	update post_comment set reply_count = reply_count - 1 where comment_id = old.comment_id;
+	update post_comment set reply_count = reply_count - 1 where comment_id = old.reply_id;
 END $$
 DELIMITER ;
 
@@ -124,7 +124,7 @@ CREATE TRIGGER `user_follower_AFTER_INSERT`
 AFTER INSERT ON `user_follower` 
 FOR EACH ROW 
 BEGIN
-	update user set follower_count = follower_count + 1 where user_id = new.user_id;
+	update user set follower_count = follower_count + 1 where user_id = new.follower_id;
 END $$
 DELIMITER ;
 
@@ -133,12 +133,12 @@ CREATE TRIGGER `user_follower_AFTER_DELETE`
 AFTER DELETE ON `user_follower` 
 FOR EACH ROW 
 BEGIN
-	update user set follower_count = follower_count - 1 where user_id = old.user_id;
+	update user set follower_count = follower_count - 1 where user_id = old.follower_id;
 END $$
 DELIMITER ;
 
 DELIMITER $$
-CREATE TRIGGER `user_AFTER_DELETE` 
+CREATE TRIGGER `user_BEFORE_DELETE` 
 BEFORE DELETE ON `user`
 FOR EACH ROW
 BEGIN
