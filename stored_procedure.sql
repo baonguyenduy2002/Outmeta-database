@@ -211,3 +211,24 @@ BEGIN
     WHERE writer_id = user_id;
 END$$
 DELIMITER ;
+
+-- procedure for get a list of personal posts
+-- Input: none
+-- Output: lists of personal posts
+DROP PROCEDURE IF EXISTS view_post_personal;
+DELIMITER $$
+CREATE PROCEDURE view_post_personal()
+BEGIN
+    SELECT
+        post.post_id,
+        post.post_datetime,
+        personal_post.post_privacy,
+        post.post_content,
+        post.post_media,
+        post.comment_count,
+        post.react_count,
+        post.writer_id
+    FROM post, personal_post
+    WHERE post.post_id = personal_post.post_id;
+END$$
+DELIMITER ;
